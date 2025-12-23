@@ -493,6 +493,5 @@ def run_script() -> None:
     display.sort_content(courses)
 
 if __name__ == "__main__":
-
     run_script()
 
