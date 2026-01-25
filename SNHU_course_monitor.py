@@ -40,8 +40,7 @@ from html import unescape
 #
 #   PREREQUISITES:
 #
-#       This tool requires Python 3.10+ to be installed on your device and preferable added as an environment
-#       variable to your PATH and to also have the requests module installed. To install the requests module after Python and pip is
+#       This tool requires Python 3.10+ to be installed on your device and to also have the requests module installed. To install the requests module after Python and pip is
 #       installed on your device, simply run the command in your command prompt "pip install requests". Once this installation
 #       is complete and you followed the HOW-TO guide this should be working correctly.
 #
@@ -494,4 +493,5 @@ def run_script() -> None:
 
 if __name__ == "__main__":
     run_script()
+
 
