@@ -21,7 +21,7 @@ from html import unescape
 #   HOW-TO:
 #
 #       Open the "config.json" file in the directory this file is found in. In this file enter your email address
-#       in the email field and password in the password field and then save the file. Once saved you want to path to the directory
+#       in the email field and password in the password field and then save the file. Once saved, you want to path to the directory
 #       the "SNHU_course_monitor.py" file is stored in in the Command Prompt and then run the command "py SNHU_course_monitor.py".
 #       This will then run this script and display the course work you have not completed in your PINNED courses found in Brightspace.
 #
@@ -493,6 +493,7 @@ def run_script() -> None:
 
 if __name__ == "__main__":
     run_script()
+
 
 
 
