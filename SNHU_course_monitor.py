@@ -4,7 +4,7 @@ from json import load, loads
 from os import system, name
 from html import unescape
 
-###############################################
+################################################
 #
 #
 #   CREATED BY: https://www.github.com/null
@@ -21,7 +21,7 @@ from html import unescape
 #   HOW-TO:
 #
 #       Open the "config.json" file in the directory this file is found in. In this file enter your email address
-#       in the email field and password in the password field and then save the file. Once saved, you want to path to the directory
+#       in the email field and password in the password field and then save the file. Once saved you want to path to the directory
 #       the "SNHU_course_monitor.py" file is stored in in the Command Prompt and then run the command "py SNHU_course_monitor.py".
 #       This will then run this script and display the course work you have not completed in your PINNED courses found in Brightspace.
 #
@@ -40,8 +40,9 @@ from html import unescape
 #
 #   PREREQUISITES:
 #
-#       This tool requires Python 3.10+ to be installed on your device and to also have the requests module installed. To install the requests module
-#       after Python and pip is installed on your device, simply run the command in your command prompt "pip install requests". Once this installation
+#       This tool requires Python 3.10+ to be installed on your device and preferable added as an environment
+#       variable to your PATH and to also have the requests module installed. To install the requests module after Python and pip is
+#       installed on your device, simply run the command in your command prompt "pip install requests". Once this installation
 #       is complete and you followed the HOW-TO guide this should be working correctly.
 #
 #
@@ -97,28 +98,13 @@ class SNHUAuth:
                 allow_redirects=False
             )
 
-            while response.status_code in [301, 302, 303, 307, 308]:
-                redirect_url: str = response.headers.get("Location", "")
-
-                if not redirect_url:
-                    break
-                
-                if "login.microsoftonline.com" in redirect_url and "saml2" in redirect_url:
-                    return self.complete_microsoft_auth(redirect_url)
-                
-                if redirect_url.startswith("/"):
-                    redirect_url: str = "https://learn.snhu.edu" + redirect_url
-                
-                response: Response = self.session.get(
-                    redirect_url,
-                    headers=self.headers,
-                    allow_redirects=False
-                )
-            
-            return True
+            if response.status_code == 302:
+                return self.complete_microsoft_auth(response.headers.get("Location", ""))
             
         except:
-            return False
+            pass
+        
+        return False
     
     def complete_microsoft_auth(self, saml_url: str) -> bool:
         try:
@@ -134,8 +120,7 @@ class SNHUAuth:
                         config_match: Match = search(r"\$Config\s*=\s*({.+?});", response.text, DOTALL)
 
                         if config_match:
-                            config: dict = loads(config_match.group(1))
-                            url_post: str = config.get("urlPost", "")
+                            url_post: str = loads(config_match.group(1)).get("urlPost", "")
                             
                             if url_post:
                                 if not url_post.startswith("http"):
@@ -150,28 +135,7 @@ class SNHUAuth:
                     
                     elif "ConvergedSignIn" in response.text:
                         break
-                    
-                    return False
 
-                elif response.status_code in [301, 302, 303, 307, 308]:
-                    redirect_url: str = response.headers.get("Location", "")
-
-                    if not redirect_url:
-                        return False
-                    
-                    if not redirect_url.startswith("http"):
-                        if redirect_url.startswith("/"):
-                            redirect_url: str = "https://login.microsoftonline.com" + redirect_url
-
-                        else:
-                            redirect_url: str = "https://login.microsoftonline.com/" + redirect_url
-                    
-                    response: Response = self.session.get(
-                        redirect_url,
-                        headers=self.headers,
-                        allow_redirects=False
-                    )
-                
                 else:
                     return False
 
@@ -184,7 +148,9 @@ class SNHUAuth:
             return self.submit_password_saml()
             
         except:
-            return False
+            pass
+
+        return False
     
     def extract_tokens(self, html: str) -> bool:
         try:
@@ -206,7 +172,9 @@ class SNHUAuth:
             return True
 
         except:
-            return False
+            pass
+
+        return False
     
     def fetch_credential_type(self) -> bool:
 
@@ -259,7 +227,7 @@ class SNHUAuth:
         )
         
         for _ in range(20):
-            if response.status_code in [302, 301, 303, 307, 308]:
+            if response.status_code == 302:
                 redirect_url: str = response.headers.get("Location", "")
 
                 if not redirect_url:
@@ -337,7 +305,9 @@ class SNHUAuth:
             return False
 
         except:
-            return False
+            pass
+
+        return False
     
     def handle_saml_response_form(self, html: str) -> bool:
         try:
@@ -365,7 +335,9 @@ class SNHUAuth:
             return "d2lSessionVal" in self.session.cookies
             
         except:
-            return False
+            pass
+
+        return False
 
 class DisplayCourseContent:
     def __init__(self, session: Session = None):
@@ -473,8 +445,7 @@ class DisplayCourseContent:
                 print(f"  {title} | {course}")
 
         if unknown:
-            print(f"\nUnknown:")
-
+            print("\nUnknown:")
             for title, course in unknown:
                 print(f"  {title} | {course}")
 
