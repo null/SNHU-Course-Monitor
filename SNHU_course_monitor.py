@@ -287,7 +287,7 @@ class SNHUAuth:
                 return False
             
             if not url_post.startswith("http"):
-                url_post: str = "https://login.microsoftonline.com" + url_post
+                url_post: str = f"https://login.microsoftonline.com{url_post}"
             
             response: Response = self.session.post(
                 url_post,
